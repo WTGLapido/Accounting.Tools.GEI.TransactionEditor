@@ -33,6 +33,7 @@ Press **Enter** on an empty line to save and exit.
 | `@?` | List all top-level elements in the outer envelope (plain XML) |
 | `@?AdditionalDataItems` | Show the tree for `<AdditionalDataItems>` in the outer envelope |
 | `help` | Show the full in-tool help |
+| *(empty line)* + Enter | **Save all changes and exit** |
 
 ### Replace field values
 
