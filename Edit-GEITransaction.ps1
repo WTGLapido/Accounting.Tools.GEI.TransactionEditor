@@ -18,8 +18,8 @@
       Tag=Value:        <- Enter to finish
 #>
 param(
-    [Parameter(Mandatory)]
-    [string]$Path,
+    [Parameter(Mandatory, ValueFromRemainingArguments)]
+    [string[]]$Path,
 
     [string]$OutputPath
 )
@@ -27,15 +27,17 @@ param(
 Set-StrictMode -Off
 Add-Type -AssemblyName System.Xml.Linq
 
+$InputPath = $Path -join ' '
+
 # ---------------------------------------------------------------------------
 # Validate input
 # ---------------------------------------------------------------------------
-if (-not (Test-Path $Path)) {
-    Write-Error "File not found: $Path"
+if (-not (Test-Path $InputPath)) {
+    Write-Error "File not found: $InputPath"
     exit 1
 }
 
-$content = Get-Content $Path -Raw -Encoding UTF8
+$content = Get-Content $InputPath -Raw -Encoding UTF8
 
 if ($content -notmatch '(?s)<Transaction>(.*?)</Transaction>') {
     Write-Error 'No <Transaction> element found in file.'
@@ -414,9 +416,9 @@ $newInnerXml = $xdoc.ToString([System.Xml.Linq.SaveOptions]::DisableFormatting)
 $newB64      = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($newInnerXml))
 
 if (-not $OutputPath) {
-    $dir        = Split-Path $Path -Parent
-    $name       = [System.IO.Path]::GetFileNameWithoutExtension($Path)
-    $ext        = [System.IO.Path]::GetExtension($Path)
+    $dir        = Split-Path $InputPath -Parent
+    $name       = [System.IO.Path]::GetFileNameWithoutExtension($InputPath)
+    $ext        = [System.IO.Path]::GetExtension($InputPath)
     $OutputPath = Join-Path $dir ($name + '_modified' + $ext)
 }
 
